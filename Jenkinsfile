@@ -22,10 +22,12 @@ pipeline {
                 }
             }
         }
-        stage("build image") {
+        stage("build and push image") {
             steps {
                 script {
                     buildImage 'golfpongtarin/demo-app:1.1'
+                    dockerLogin()
+                    dockerPush 'golfpongtarin/demo-app:1.1'
                 }
             }
         }
