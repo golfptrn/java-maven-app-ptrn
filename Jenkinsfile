@@ -25,7 +25,7 @@ pipeline {
         stage("build image") {
             steps {
                 script {
-                    buildImage()
+                    buildImage 'golfpongtarin/demo-app:1.1'
                 }
             }
         }
