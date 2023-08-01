@@ -1,41 +1,33 @@
-def gv
-
 pipeline {
     agent any
-    parameters {
-        string (name: 'VERSION', defualtValue: '', description: 'version to deploy on prod')
-        choice (name: 'VERSION', choices: ['1.1.0', '1.2.0', '1.3.0'], description: '')
-        booleanParam (name: 'executeTests', defaultValue: true, description: '')
-    }
     tools {
         maven 'Maven'
     }
     stages {
-        stage("init") {
-            steps {
-                script {
-                    gv = load "script.groovy"
-                }
-            }
-        }
         stage("build jar") {
             steps {
                 script {
-                    gv.buildJar()
+                    echo "building the application..."
+                    sh 'mvn package'
                 }
             }
         }
         stage("build image") {
             steps {
                 script {
-                    gv.buildImage()
+                    echo "building the docker image..."
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]
+                        sh 'docker build -t golfpongtarin:demo-app:1.0 .'
+                        sh "echo $PASS | docker login -u $USER --password-stdin"
+                        sh 'docker puch golfpongtarin:demo-app:1.0'
+                    
                 }
             }
         }
         stage("deploy") {
             steps {
                 script {
-                    gv.deployApp() 
+                    echo "deploying the application..."
                 }
             }
         }
