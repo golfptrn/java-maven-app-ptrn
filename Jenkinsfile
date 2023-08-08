@@ -10,9 +10,9 @@ pipeline {
             steps {
                 script {
                     echo 'incrementing app version...'
-                    sh 'mvn build-helper:parse-version versions:set \
+                    sh "mvn build-helper:parse-version versions:set \
                         -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
-                        versions:commit'
+                        versions:commit"
                     def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
                     def version = matcher[0][1]
                     env.IMAGE_NAME = "$version-$BUILD_NUMBER"
@@ -42,7 +42,11 @@ pipeline {
         stage('deploy') {
             steps {
                 script {
-                    echo 'deploying docker image to EC2...'
+                    def dockerCmd = 'docker run -p 3080:3080 -d golfpongtarin/demo-app:1.1'
+                    sshagent(['ec2-server-key']) {
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@13.40.100.59 ${dockerCmd}"
+                        sh 'docker login'
+                    }
                 }
             }
         }
