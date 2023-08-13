@@ -59,7 +59,7 @@ pipeline {
         stage('commit version update') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'github-repo', passwordVariable: 'PASS', usernameVariable: 'USER']) {
+                    withCredentials([usernamePassword(credentialsId: 'github-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                         sh "git remote set-url origin https//${USER}:${PASS}@github.com/golfptrn/java-maven-app-ptrn.git"
                         sh 'git add .'
                         sh 'git commit -m "ci: version bump"'
